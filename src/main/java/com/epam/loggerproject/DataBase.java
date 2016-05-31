@@ -1,12 +1,9 @@
 package com.epam.loggerproject;
-import oracle.jdbc.OracleDriver;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
 import org.slf4j.Logger;
-
-import javax.sql.RowSet;
 
 import static com.sun.org.apache.xalan.internal.lib.ExsltStrings.split;
 
@@ -20,11 +17,12 @@ public class DataBase {
     private String driver = "oracle.jdbc.driver.OracleDriver";
 
 
-    public void addConnection() {
+    public void addConnection() throws NullConnectionException {
         try {
             Class.forName(driver).newInstance();
             this.connection = DriverManager.getConnection(path, login, pass);
             this.statement = connection.createStatement();
+            log.info("connection is open");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -32,7 +30,8 @@ public class DataBase {
 
     public boolean isConnection() {
         if (this.connection == null) {
-
+            log.warn("connection is null");
+            return false;
         }
 
         boolean ativation = false;
@@ -40,35 +39,55 @@ public class DataBase {
             ativation = this.connection.isClosed();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("read error of data");
         }
-        return ativation;
+        return !ativation;
     }
 
     public void closeConnection() {
         try {
             this.connection.close();
+            log.info("connection is close");
         } catch (Exception e) {
+            log.error("read error of data");
             e.printStackTrace();
         }
     }
 
-    public void executeUpdate(String sql) {
+    public void executeUpdate(String sql) throws NullConnectionException, IncorrectQueryException {
+        if (sql == null) {
+            throw new IncorrectQueryException("SQL query is incorrect");
+        }
+        if (this.connection == null) {
+            log.error("connection is null");
+            throw new NullConnectionException("connection is null");
+        }
         try {
             statement.executeUpdate(sql);
+            log.info("update query is executed");
         } catch (Exception e) {
+            log.error("read error of date");
             e.printStackTrace();
         }
     }
 
-    public ResultSet executeQuery(String sql) {
+    public ResultSet executeQuery(String sql) throws NullConnectionException, IncorrectQueryException {
+        if (sql == null) {
+            throw new IncorrectQueryException("SQL query is incorrect");
+        }
+        if (this.connection == null) {
+            log.error("connection is null");
+            throw new NullConnectionException("connection is null");
+        }
         ResultSet rs = null;
 
         try {
             rs = statement.executeQuery(sql);
+            log.info("SELECT query is executed");
         } catch (Exception e) {
+            log.error("read error of date");
             e.printStackTrace();
         }
         return rs;
     }
 }
-
