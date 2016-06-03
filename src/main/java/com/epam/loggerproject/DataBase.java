@@ -24,7 +24,7 @@ public class DataBase {
             this.statement = connection.createStatement();
             log.info("connection is open");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("connection is null", e);
         }
     }
 
@@ -38,8 +38,7 @@ public class DataBase {
         try {
             ativation = this.connection.isClosed();
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("read error of data");
+            log.error("read error of data", e);
         }
         return !ativation;
     }
@@ -49,8 +48,7 @@ public class DataBase {
             this.connection.close();
             log.info("connection is close");
         } catch (Exception e) {
-            log.error("read error of data");
-            e.printStackTrace();
+            log.error("read error of data", e);
         }
     }
 
@@ -66,8 +64,7 @@ public class DataBase {
             statement.executeUpdate(sql);
             log.info("update query is executed");
         } catch (Exception e) {
-            log.error("read error of date");
-            e.printStackTrace();
+            log.error("read error of date", e);
         }
     }
 
@@ -85,8 +82,7 @@ public class DataBase {
             rs = statement.executeQuery(sql);
             log.info("SELECT query is executed");
         } catch (Exception e) {
-            log.error("read error of date");
-            e.printStackTrace();
+            log.error("read error of date", e);
         }
         return rs;
     }
